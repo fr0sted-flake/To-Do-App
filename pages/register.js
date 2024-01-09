@@ -39,7 +39,7 @@ const RegisterForm = () => {
 
   const signInWithGoogle = async () => {
     const user = await signInWithPopup(auth, Provider);
-    console.log(user);
+    
   };
 
   return (
