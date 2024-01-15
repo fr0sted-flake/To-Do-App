@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useState, useEffect } from "react";
@@ -8,10 +9,10 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/firebase/auth";
 import Link from "next/link";
-import Loader from "@/_components/Loader";
+
 
 const Provider = new GoogleAuthProvider();
 
@@ -54,9 +55,7 @@ const RegisterForm = () => {
     console.log(user);
   };
 
-  return isLoading || (!isLoading && !!authUser) ? (
-    <Loader />
-  ) : (
+  return (
     <main className="flex lg:h-[100vh]">
       <div className="w-full lg:w-[60%] p-8 md:p-14 flex items-center justify-center lg:justify-start">
         <div className="p-8 w-[600px]">
