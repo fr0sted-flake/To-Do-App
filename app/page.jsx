@@ -98,9 +98,7 @@ export default function Home() {
     }
   };
 
-  return !authUser ? (
-    <Loader />
-  ) : (
+  return  (
     <main className="">
       <div
         className="bg-black text-white w-44 py-4 mt-10 rounded-lg transition-transform hover:bg-black/[0.8] active:scale-90 flex items-center justify-center gap-2 font-medium shadow-md fixed bottom-5 right-5 cursor-pointer"
@@ -113,11 +111,11 @@ export default function Home() {
         <div className="bg-white -m-6 p-3 sticky top-0">
           <div className="flex justify-center flex-col items-center">
             <span className="text-7xl mb-10">📝</span>
-            <h1 className="text-5xl md:text-7xl font-bold">ToDo's</h1>
+            <h1 className="text-5xl md:text-7xl font-bold">ToDos</h1>
           </div>
           <div className="flex items-center gap-2 mt-10">
             <input
-              placeholder={`👋 Hello ${authUser.username}, What to do Today?`}
+              placeholder={`👋 Hello , What to do Today?`}
               type="text"
               className="font-semibold placeholder:text-gray-500 border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 text-lg transition-all duration-300"
               autoFocus

@@ -4,7 +4,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useState, useEffect } from "react";
 import { auth } from "../../firebase/firebaseConfig";
 import {
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
@@ -15,11 +16,12 @@ import Loader from "@/_components/Loader";
 
 const Provider = new GoogleAuthProvider();
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const router = useRouter();
+  const [username, setUsername] = useState(null);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const { authUser, isLoading } = useAuth();
+  const { authUser, isLoading, setAuthUser } = useAuth();
 
   useEffect(() => {
     if (!isLoading && authUser) {
@@ -27,10 +29,22 @@ const LoginForm = () => {
     }
   }, [authUser, isLoading]);
 
-  const loginHandler = async () => {
-    if (!email || !password) return;
+  const singupHandler = async () => {
+    if (!email || !password || !username) return;
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await updateProfile(auth.currentUser, {
+        displayName: username,
+      });
+      setAuthUser({
+        uid: user.uid,
+        email: user.email,
+        username,
+      });
     } catch (error) {
       console.error("An error occured", error);
     }
@@ -38,7 +52,7 @@ const LoginForm = () => {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, Provider);
+      const user = await signInWithPopup(auth, Provider);
     } catch (error) {
       console.error("An error occured", error);
     }
@@ -50,14 +64,14 @@ const LoginForm = () => {
     <main className="flex lg:h-[100vh]">
       <div className="w-full lg:w-[60%] p-8 md:p-14 flex items-center justify-center lg:justify-start">
         <div className="p-8 w-[600px]">
-          <h1 className="text-6xl font-semibold">Login</h1>
+          <h1 className="text-6xl font-semibold">Sign Up</h1>
           <p className="mt-6 ml-1">
-            Don't have an account ?{" "}
+            Already have an account ?{" "}
             <Link
-              href="/register"
+              href="/login"
               className="underline hover:text-blue-400 cursor-pointer"
             >
-              Sign Up
+              Login
             </Link>
           </p>
 
@@ -73,12 +87,22 @@ const LoginForm = () => {
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="mt-10 pl-1 flex flex-col">
+              <label>Name</label>
+              <input
+                type="text"
+                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mt-10 pl-1 flex flex-col">
               <label>Email</label>
               <input
                 type="email"
                 name="email"
                 className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
             <div className="mt-10 pl-1 flex flex-col">
@@ -88,13 +112,14 @@ const LoginForm = () => {
                 name="password"
                 className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             <button
               className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
-              onClick={loginHandler}
+              onClick={singupHandler}
             >
-              Sign in
+              Sign Up
             </button>
           </form>
         </div>
@@ -109,4 +134,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
