@@ -50,7 +50,11 @@ const RegisterForm = () => {
   };
 
   const signInWithGoogle = async () => {
-    const user = await signInWithPopup(auth, Provider);
+    try {
+      const user = await signInWithPopup(auth, Provider);
+    } catch (error) {
+      console.error("An error occured", error);
+    }
   };
 
   return (
