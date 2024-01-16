@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthUserProvider><Suspense fallback>{children}</Suspense></AuthUserProvider>
+        <AuthUserProvider>{children}</AuthUserProvider>
       </body>
     </html>
   );
