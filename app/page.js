@@ -15,7 +15,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { auth, db } from "../firebase/firebaseConfig";
 import Loader from "@/_components/Loader";
 
 export default function Home() {
@@ -34,28 +34,18 @@ export default function Home() {
     }
   }, [authUser, isLoading]);
 
-  /**
-   * Fetches all the todos for a given user ID from Firestore and sets the todos state with the data.
-   *
-   * @param {string} uid - The user ID to fetch todos for.
-   * @return {void}
-   */
   const fetchTodos = async (uid) => {
     try {
-      // Create a Firestore query to fetch all the todos for the user with the given ID.
       const q = query(collection(db, "todos"), where("owner", "==", uid));
 
-      // Execute the query and get a snapshot of the results.
       const querySnapshot = await getDocs(q);
 
-      // Extract the data from each todo document and add it to the data array.
       let data = [];
       querySnapshot.forEach((todo) => {
         console.log(todo);
         data.push({ ...todo.data(), id: todo.id });
       });
 
-      // Set the todos state with the data array.
       setTodos(data);
     } catch (error) {
       console.error("An error occured", error);
@@ -70,18 +60,14 @@ export default function Home() {
 
   const addToDo = async () => {
     try {
-      // Add a new todo document to the "todos" collection in Firestore with the current user's ID,
-      // the content of the todo input, and a completed status of false.
       const docRef = await addDoc(collection(db, "todos"), {
         owner: authUser.uid,
         content: todoInput,
         completed: false,
       });
 
-      // After adding the new todo, fetch all todos for the current user and update the state with the new data.
       fetchTodos(authUser.uid);
 
-      // Clear the todo input field.
       setTodoInput("");
     } catch (error) {
       console.error("An error occured", error);
@@ -90,10 +76,8 @@ export default function Home() {
 
   const deleteTodo = async (docId) => {
     try {
-      // Delete the todo document with the given ID from the "todos" collection in Firestore.
       await deleteDoc(doc(db, "todos", docId));
 
-      // After deleting the todo, fetch all todos for the current user and update the state with the new data.
       fetchTodos(authUser.uid);
     } catch (error) {
       console.error("An error occured", error);
@@ -102,15 +86,12 @@ export default function Home() {
 
   const makeAsCompleteHander = async (event, docId) => {
     try {
-      // Get a reference to the todo document with the given ID in the "todos" collection in Firestore.
       const todoRef = doc(db, "todos", docId);
 
-      // Update the "completed" field of the todo document to the value of the "checked" property of the event target.
       await updateDoc(todoRef, {
         completed: event.target.checked,
       });
 
-      // After updating the todo, fetch all todos for the current user and update the state with the new data.
       fetchTodos(authUser.uid);
     } catch (error) {
       console.error("An error occured", error);
@@ -132,11 +113,11 @@ export default function Home() {
         <div className="bg-white -m-6 p-3 sticky top-0">
           <div className="flex justify-center flex-col items-center">
             <span className="text-7xl mb-10">📝</span>
-            <h1 className="text-5xl md:text-7xl font-bold">ToooDooo's</h1>
+            <h1 className="text-5xl md:text-7xl font-bold">ToDo's</h1>
           </div>
           <div className="flex items-center gap-2 mt-10">
             <input
-              placeholder={`👋 Hello , What to do Today?`}
+              placeholder={`👋 Hello ${authUser.username}, What to do Today?`}
               type="text"
               className="font-semibold placeholder:text-gray-500 border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 text-lg transition-all duration-300"
               autoFocus
