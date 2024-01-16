@@ -5,7 +5,6 @@ import { MdDeleteForever } from "react-icons/md";
 import { GoSignOut } from "react-icons/go";
 import { useAuth } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
-
 import {
   collection,
   addDoc,

@@ -1,11 +1,10 @@
-'use client'
+"use client";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useState, useEffect } from "react";
 import { auth } from "../../firebase/firebaseConfig";
 import {
-  createUserWithEmailAndPassword,
-  updateProfile,
+  signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
@@ -13,15 +12,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/firebase/auth";
 import Link from "next/link";
 
-
 const Provider = new GoogleAuthProvider();
 
-const RegisterForm = () => {
+const LoginForm = () => {
   const router = useRouter();
-  const [username, setUsername] = useState(null);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const { authUser, isLoading, setAuthUser } = useAuth();
+  const { authUser, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && authUser) {
@@ -29,44 +26,35 @@ const RegisterForm = () => {
     }
   }, [authUser, isLoading]);
 
-  const singupHandler = async () => {
-    if (!email || !password || !username) return;
+  const loginHandler = async () => {
+    if (!email || !password) return;
     try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      await updateProfile(auth.currentUser, {
-        displayName: username,
-      });
-      setAuthUser({
-        uid: user.uid,
-        email: user.email,
-        username,
-      });
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error("An error occured", error);
     }
   };
 
   const signInWithGoogle = async () => {
-    const user = await signInWithPopup(auth, Provider);
-    console.log(user);
+    try {
+      await signInWithPopup(auth, Provider);
+    } catch (error) {
+      console.error("An error occured", error);
+    }
   };
 
   return (
     <main className="flex lg:h-[100vh]">
       <div className="w-full lg:w-[60%] p-8 md:p-14 flex items-center justify-center lg:justify-start">
         <div className="p-8 w-[600px]">
-          <h1 className="text-6xl font-semibold">Sign Up</h1>
+          <h1 className="text-6xl font-semibold">Login</h1>
           <p className="mt-6 ml-1">
-            Already have an account ?{" "}
+            Don't have an account ?{" "}
             <Link
-              href="/login"
+              href="/register"
               className="underline hover:text-blue-400 cursor-pointer"
             >
-              Login
+              Sign Up
             </Link>
           </p>
 
@@ -82,22 +70,12 @@ const RegisterForm = () => {
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="mt-10 pl-1 flex flex-col">
-              <label>Name</label>
-              <input
-                type="text"
-                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mt-10 pl-1 flex flex-col">
               <label>Email</label>
               <input
                 type="email"
                 name="email"
                 className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
             </div>
             <div className="mt-10 pl-1 flex flex-col">
@@ -107,14 +85,13 @@ const RegisterForm = () => {
                 name="password"
                 className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
             <button
               className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
-              onClick={singupHandler}
+              onClick={loginHandler}
             >
-              Sign Up
+              Sign in
             </button>
           </form>
         </div>
@@ -129,4 +106,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;
