@@ -16,7 +16,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../firebase/firebaseConfig";
 
 export default function Home() {
   const [todoInput, setTodoInput] = useState("");
